@@ -26,11 +26,14 @@ type ServiceInfo struct {
 }
 
 type ServiceMgr struct {
-	Services []*ServiceInfo // 服务列表
+	Services      []*ServiceInfo // 服务列表
+	LastCleanTime int64          // 上一次清理超时服务的时间
 }
 
 func NewServiceMgr() *ServiceMgr {
-	mgr := &ServiceMgr{}
+	mgr := &ServiceMgr{
+		LastCleanTime: time.Now().Unix(),
+	}
 	return mgr
 }
 
@@ -74,16 +77,24 @@ func (mgr *ServiceMgr) HeartBeat(serviceType string, address string) {
 		mgr.RegisterService(serviceType, address)
 	}
 	//fmt.Printf("heart beat, type: %s, address: %s\n", serviceType, address)
+	mgr.CleanTimeoutService()
 }
 
-// 清理心跳超时的服务,心跳超过10秒
+// 清理心跳超时的服务
 func (mgr *ServiceMgr) CleanTimeoutService() {
 	curTime := time.Now().Unix()
+	if mgr.LastCleanTime+5 > curTime {
+		return
+	}
+
 	for i := 0; i < len(mgr.Services); {
-		if mgr.Services[i].HeartBeatTime+10 < curTime {
+		if mgr.Services[i].HeartBeatTime+3 < curTime {
+			fmt.Printf("remove timeout service [%s:%s]\n", mgr.Services[i].Type, mgr.Services[i].Address)
 			mgr.Services = append(mgr.Services[:i], mgr.Services[i+1:]...)
 		} else {
 			i++
 		}
 	}
+
+	mgr.LastCleanTime = time.Now().Unix()
 }

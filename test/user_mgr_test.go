@@ -8,6 +8,7 @@ import (
 )
 
 func TestUserMgr(t *testing.T) {
+	fmt.Println("======================================= UserMgr test begin")
 	userMgr := services.NewUserMgr()
 	userMgr.UserOnline("tom", "127.0.0.1:9101", 1)
 	userMgr.UserOnline("lucy", "127.0.0.1:9101", 1)
