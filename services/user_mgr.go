@@ -89,7 +89,7 @@ func (mgr *UserMgr) GetUserDuration(name string) (uint32, error) {
 		return duration, nil
 	}
 
-	return 0, nil
+	return 0, status.Errorf(codes.Code(protocols.ErrorCode_USER_NOT_EXIST_ERROR), "user not exist")
 }
 
 // 修改用户所在频道
