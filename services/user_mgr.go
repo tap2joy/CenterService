@@ -53,7 +53,7 @@ func (mgr *UserMgr) UserOnline(name string, gate string, channelId uint32) (*Use
 	// update
 	curTime := time.Now().Unix()
 	mgr.Users[name] = &UserInfo{Name: name, Gate: gate, OnlineTime: curTime, Channel: channelId}
-	fmt.Printf("user %d:%s online on gate %s\n", channelId, name, gate)
+	fmt.Printf("user [%d:%s] online on gate [%s]\n", channelId, name, gate)
 	return oldUser, nil
 }
 
@@ -64,7 +64,7 @@ func (mgr *UserMgr) UserOffline(name string) error {
 	}
 
 	delete(mgr.Users, name)
-	fmt.Printf("user %s offline\n", name)
+	fmt.Printf("user [%s] offline\n", name)
 	return nil
 }
 
@@ -89,7 +89,8 @@ func (mgr *UserMgr) GetUserDuration(name string) (uint32, error) {
 		return duration, nil
 	}
 
-	return 0, status.Errorf(codes.Code(protocols.ErrorCode_USER_NOT_EXIST_ERROR), "user not exist")
+	errMsg := fmt.Sprintf("user [%s] not exist", name)
+	return 0, status.Errorf(codes.Code(protocols.ErrorCode_USER_NOT_EXIST_ERROR), errMsg)
 }
 
 // 修改用户所在频道
@@ -98,6 +99,6 @@ func (mgr *UserMgr) ChangeUserChannel(name string, channel uint32) error {
 		mgr.Users[name].Channel = channel
 	}
 
-	fmt.Printf("user %s switch to channel %d\n", name, channel)
+	fmt.Printf("user [%s] switch to channel [%d]\n", name, channel)
 	return nil
 }
